@@ -9,60 +9,69 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
-public class SendCommandTask extends AsyncTask<COMMAND , Void, Void>{
-	
-	private static final String PASSWORD = "krecik";
-	private String CONNECTION_STRING = "root@192.168.1.13";
-	
-	private void sendCommand(String command){
-		try{
-		      JSch jsch=new JSch();
-		      
-		      
-		      String user=CONNECTION_STRING.substring(0, CONNECTION_STRING.indexOf('@'));
+public class SendCommandTask extends AsyncTask<COMMAND, Void, Void> {
 
-		      CONNECTION_STRING=CONNECTION_STRING.substring(CONNECTION_STRING.indexOf('@')+1);
-		      Session session=jsch.getSession(user, CONNECTION_STRING, 22);
+	private static String PASSWORD = null;
+	private static String IP = null;
+	private static String USERNAME = null;
 
-		      java.util.Properties config = new java.util.Properties(); 
-		      config.put("StrictHostKeyChecking", "no");
-		      session.setConfig(config);
-		      
-		      // If two machines have SSH passwordless logins setup, the following line is not needed:
-		      session.setPassword(PASSWORD);
-		      session.connect();
+	public static void setPrefs(String ip, String username, String password) {
+		PASSWORD = password;
+		USERNAME = username;
+		IP = ip;
+	}
 
-		      Channel channel=session.openChannel("exec");
-		      ((ChannelExec)channel).setCommand(command);
+	private void sendCommand(String command) {
+		try {
+			JSch jsch = new JSch();
 
-		      //channel.setInputStream(System.in);
-		      channel.setInputStream(null);
+			Session session = jsch.getSession(USERNAME, IP, 22);
 
-		      ((ChannelExec)channel).setErrStream(System.err);
+			java.util.Properties config = new java.util.Properties();
+			config.put("StrictHostKeyChecking", "no");
+			session.setConfig(config);
 
-		      InputStream in=channel.getInputStream();
+			// If two machines have SSH passwordless logins setup, the following
+			// line is not needed:
+			session.setPassword(PASSWORD);
+			session.connect();
 
-		      channel.connect();
-		      byte[] tmp=new byte[1024];
-		      while(true){
-		        while(in.available()>0){
-		          int i=in.read(tmp, 0, 1024);
-		          if(i<0)break;
-		          System.out.print(new String(tmp, 0, i));
-		        }
-		        if(channel.isClosed()){
-		          System.out.println("exit-status: "+channel.getExitStatus());
-		          break;
-		        }
-		        try{Thread.sleep(500);}catch(Exception ee) {ee.printStackTrace();}
-		      }
-		      channel.disconnect();
-		      session.disconnect();
-		    }
-		    catch(Exception e){
-		      System.out.println(e);
-		    }
-	
+			Channel channel = session.openChannel("exec");
+			((ChannelExec) channel).setCommand(command);
+
+			// channel.setInputStream(System.in);
+			channel.setInputStream(null);
+
+			((ChannelExec) channel).setErrStream(System.err);
+
+			InputStream in = channel.getInputStream();
+
+			channel.connect();
+			byte[] tmp = new byte[1024];
+			while (true) {
+				while (in.available() > 0) {
+					int i = in.read(tmp, 0, 1024);
+					if (i < 0)
+						break;
+					System.out.print(new String(tmp, 0, i));
+				}
+				if (channel.isClosed()) {
+					System.out.println("exit-status: "
+							+ channel.getExitStatus());
+					break;
+				}
+				try {
+					Thread.sleep(500);
+				} catch (Exception ee) {
+					ee.printStackTrace();
+				}
+			}
+			channel.disconnect();
+			session.disconnect();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
 	}
 
 	@Override
