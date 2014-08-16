@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="kindle_ip"
+        android:persistent="true"
+        android:summary="@string/kindle_ip_summ"
+        android:title="@string/kindle_ip" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="username"
+        android:persistent="true"
+        android:summary="@string/username_summ"
+        android:title="@string/username" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="password"
+        android:persistent="true"
+        android:summary="@string/password_summ"
+        android:title="@string/password" />
+
+</PreferenceScreen>
